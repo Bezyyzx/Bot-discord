@@ -109,8 +109,8 @@ async def on_ready():
     if not channel:
         print("❌ Nie znaleziono kanału do ról.")
         return
-
-  async def send_role_messages(channel):
+await send_role_messages(channel)
+async def send_role_messages(channel):
     messages_to_send = [
         {
             "content": "**🎯 Wybierz swój przedział wiekowy z menu poniżej:**",
