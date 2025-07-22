@@ -138,9 +138,8 @@ async def on_member_join(member):
 async def restart_bot(ctx):
     await ctx.send("🔄 Restartuję bota...")
 
-    # Ustaw ID kanału, gdzie ma wysłać info po restarcie
     with open("restart_flag.txt", "w") as f:
-        f.write(str(ctx.channel.id 1396527730811474026))  # zapisz ID kanału, np. 123456789
+        f.write(str(ctx.channel.id))  # poprawne zapisanie ID kanału
 
     await bot.close()  # Render automatycznie odpala z powrotem
 
