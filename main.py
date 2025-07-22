@@ -135,6 +135,13 @@ async def on_command_error(ctx, error):
 @bot.event
 async def on_ready():
     print(f'✅ Bot jest online jako: {bot.user}')
+
+    # 🔧 Inicjalizacja połączenia z bazą
+    if not hasattr(bot, "db"):
+        bot.db = await asyncpg.create_pool(DATABASE_URL)
+        print("📡 Połączono z bazą danych!")
+
+    # RENDER SELECT VIEWS
     role_channel_id = 1396550626262913166
     channel = bot.get_channel(role_channel_id)
     if not channel:
@@ -158,7 +165,6 @@ async def on_ready():
             for msg in messages)
         if not already_sent:
             await channel.send(content=m["content"], view=m["view"])
-
 
 @bot.event
 async def on_member_join(member):
@@ -353,6 +359,7 @@ async def rank(ctx, member: discord.Member = None):
     embed.set_thumbnail(
         url=member.avatar.url if member.avatar else member.default_avatar.url)
     await ctx.send(embed=embed)
+
 
 @bot.command(name="ranking", aliases=["rankin"])
 async def ranking(ctx):
