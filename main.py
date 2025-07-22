@@ -14,6 +14,7 @@ import random
 TOKEN = os.getenv('DISCORD_TOKEN')
 CHANNEL_ID = 1396525966116917309
 DATABASE_URL = os.getenv("DATABASE_URL")
+ROLES_SENT_FILE = "roles_sent.txt"
 
 intents = discord.Intents.default()
 intents.members = True
