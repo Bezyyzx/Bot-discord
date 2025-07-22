@@ -14,7 +14,7 @@ import random
 TOKEN = os.getenv('DISCORD_TOKEN')
 CHANNEL_ID = 1396525966116917309
 DATABASE_URL = os.getenv("DATABASE_URL")
-ROLES_SENT_FILE = "roles_sent.txt"
+ROLES_STATE_FILE = "roles_state.json"
 
 intents = discord.Intents.default()
 intents.members = True
@@ -104,11 +104,15 @@ async def on_ready():
         return
 
     if not has_sent_role_messages():
-        await channel.send(content="**🎯 Wybierz swój przedział wiekowy z menu poniżej:**", view=AgeSelectView())
-        await channel.send(content="**🚻 Wybierz swoją płeć z menu poniżej:**", view=GenderSelectView())
-        mark_role_messages_sent()
+        try:
+            await channel.send("**🎯 Wybierz swój przedział wiekowy z menu poniżej:**", view=AgeSelectView())
+            await channel.send("**🚻 Wybierz swoją płeć z menu poniżej:**", view=GenderSelectView())
+            mark_role_messages_sent()
+            print("✅ Wysłano wiadomości z rolami.")
+        except Exception as e:
+            print(f"❌ Błąd przy wysyłaniu wiadomości z rolami: {e}")
     else:
-        print("📝 Wiadomości z rolami już zostały wysłane.")
+        print("ℹ️ Wiadomości z rolami już zostały wysłane wcześniej.")
 def has_sent_role_messages():
     return os.path.exists(ROLES_SENT_FILE)
 
@@ -275,4 +279,14 @@ async def ranking(ctx):
     await bot.process_commands(message)
 
 keep_alive()
+def has_sent_role_messages():
+    if not os.path.exists(ROLES_STATE_FILE):
+        return False
+    with open(ROLES_STATE_FILE, "r") as f:
+        data = json.load(f)
+    return data.get("sent", False)
+
+def mark_role_messages_sent():
+    with open(ROLES_STATE_FILE, "w") as f:
+        json.dump({"sent": True}, f)
 bot.run(TOKEN)
