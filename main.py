@@ -27,6 +27,13 @@ app = Flask('')
 def home():
     return "Bot działa 24/7!"
 
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = threading.Thread(target=run)
+    t.start()
+
 
 async def notify_ping():
     channel = bot.get_channel(1396527730811474026)
@@ -375,4 +382,5 @@ async def ranking(ctx):
 
 
 # ----- RUN -----
+keep_alive()
 bot.run(TOKEN)
