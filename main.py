@@ -298,10 +298,7 @@ async def avatar(ctx, member: discord.Member = None):
     await ctx.send(embed=embed)
 
 
-# ----- LEVELING SYSTEM -----
-levels_data = load_levels()
-
-
+# ----- LEVELING SYSTEM ----
 def calculate_level(exp):
     return floor(sqrt(exp / 20))
 
