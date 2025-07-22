@@ -137,6 +137,16 @@ async def on_ready():
     print(f'✅ Bot jest online jako: {bot.user}')
 
     # 🔧 Inicjalizacja połączenia z bazą
+@bot.event
+async def on_message(message):
+    if message.author.bot or message.guild is None:
+        return
+
+    # 🔒 Sprawdź czy bot.db już istnieje (czy on_ready się wykonał)
+    if not hasattr(bot, "db"):
+        return  # Zignoruj wiadomość zanim połączenie z bazą się zainicjalizuje
+
+    user_id = str(message.author.id)
     if not hasattr(bot, "db"):
         bot.db = await asyncpg.create_pool(DATABASE_URL)
         print("📡 Połączono z bazą danych!")
