@@ -119,7 +119,6 @@ async def on_ready():
     if not has_sent_role_messages():
         await send_role_messages(channel)
         mark_role_messages_sent()
-ROLES_SENT_FILE = "roles_sent.txt"
 
 def has_sent_role_messages():
     return os.path.exists(ROLES_SENT_FILE)
