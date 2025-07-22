@@ -5,14 +5,12 @@ from math import floor, sqrt
 from discord.ui import Select, View
 from discord.ext import commands
 from discord import Embed
-from dotenv import load_dotenv
 from flask import Flask
 import threading
 from datetime import timedelta
 import asyncio
 import random
 
-load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHANNEL_ID = 1396525966116917309
 
