@@ -135,6 +135,10 @@ class GenderSelectView(View):
         super().__init__(timeout=None)
         self.add_item(GenderSelect())
 
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send("❌ Nie znaleziono takiej komendy.")
 
 @bot.event
 async def on_ready():
