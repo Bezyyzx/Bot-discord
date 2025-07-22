@@ -124,6 +124,12 @@ async def on_member_join(member):
         embed.set_thumbnail(url=member.avatar.url if member.avatar else member.default_avatar.url)
         embed.set_footer(text="Cieszymy się, że jesteś z nami!")
         await channel.send(embed=embed)
+@bot.command(name='restart')
+@commands.is_owner()
+async def restart_bot(ctx):
+    await ctx.send("♻️ Restartuję bota...")
+    await bot.close()  # zatrzymuje bota, Render go od razu odpali ponownie
+await channel.send("✅ Bot został pomyślnie zrestartowany i jest online.")
 
 @bot.command(name='commands')
 async def commands_command(ctx):
