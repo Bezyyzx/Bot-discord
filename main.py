@@ -1,6 +1,7 @@
 import discord
 import os
 import asyncpg
+import json
 from math import floor, sqrt
 from discord.ui import Select, View
 from discord.ext import commands
@@ -114,7 +115,15 @@ async def on_ready():
         return
 
     await send_role_messages(channel)
+        mark_role_messages_sent()
+ROLES_SENT_FILE = "roles_sent.txt"
 
+def has_sent_role_messages():
+    return os.path.exists(ROLES_SENT_FILE)
+
+def mark_role_messages_sent():
+    with open(ROLES_SENT_FILE, "w") as f:
+        f.write("sent")
 
 async def send_role_messages(channel):
     messages_to_send = [
