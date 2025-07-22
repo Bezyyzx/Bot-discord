@@ -110,19 +110,20 @@ async def on_ready():
         print("❌ Nie znaleziono kanału do ról.")
         return
 
+  async def send_role_messages(channel):
     messages_to_send = [
-    {
-        "content": "**🎯 Wybierz swój przedział wiekowy z menu poniżej:**",
-        "view": AgeSelectView()
-    },
-    {
-        "content": "**🚻 Wybierz swoją płeć z menu poniżej:**",
-        "view": GenderSelectView()
-    }
-]
+        {
+            "content": "**🎯 Wybierz swój przedział wiekowy z menu poniżej:**",
+            "view": AgeSelectView()
+        },
+        {
+            "content": "**🚻 Wybierz swoją płeć z menu poniżej:**",
+            "view": GenderSelectView()
+        }
+    ]
 
-for m in messages_to_send:
-    await channel.send(content=m["content"], view=m["view"])
+    for m in messages_to_send:
+        await channel.send(content=m["content"], view=m["view"])
 
 
 @bot.event
