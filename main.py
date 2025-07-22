@@ -1,6 +1,7 @@
 import discord
 import json
 import os
+import asyncpg
 from math import floor, sqrt
 from discord.ui import Select, View
 from discord.ext import commands
@@ -13,6 +14,7 @@ import random
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 CHANNEL_ID = 1396525966116917309
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 intents = discord.Intents.default()
 intents.members = True
@@ -33,20 +35,6 @@ def run():
 def keep_alive():
     t = threading.Thread(target=run)
     t.start()
-
-
-async def notify_ping():
-    channel = bot.get_channel(1396527730811474026)
-    if channel:
-        await channel.send("📡 Bot został spingowany (UptimeRobot aktywny).")
-
-
-@app.route('/ping')
-def ping():
-    asyncio.run_coroutine_threadsafe(notify_ping(), bot.loop)
-    return "✅ Ping odebrany!"
-
-
 def run():
     app.run(host='0.0.0.0', port=8080)
 
@@ -139,6 +127,10 @@ class GenderSelectView(View):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send("❌ Nie znaleziono takiej komendy.")
+
+    # Inicjalizacja bazy
+    if not hasattr(bot, "db"):
+        bot.db = await asyncpg.create_pool(DATABASE_URL)
 
 @bot.event
 async def on_ready():
@@ -307,18 +299,6 @@ async def avatar(ctx, member: discord.Member = None):
 
 
 # ----- LEVELING SYSTEM -----
-def load_levels():
-    if os.path.exists("levels.json"):
-        with open("levels.json", "r") as f:
-            return json.load(f)
-    return {}
-
-
-def save_levels(data):
-    with open("levels.json", "w") as f:
-        json.dump(data, f, indent=4)
-
-
 levels_data = load_levels()
 
 
@@ -332,32 +312,42 @@ async def on_message(message):
         return
 
     user_id = str(message.author.id)
-    if user_id not in levels_data:
-        levels_data[user_id] = {"exp": 0, "level": 0}
 
-    levels_data[user_id]["exp"] += random.randint(5, 10)
-    new_level = calculate_level(levels_data[user_id]["exp"])
+    async with bot.db.acquire() as conn:
+        user = await conn.fetchrow("SELECT * FROM levels WHERE user_id = $1", user_id)
+        if not user:
+            await conn.execute("INSERT INTO levels (user_id, exp, level) VALUES ($1, 0, 0)", user_id)
+            exp = 0
+            level = 0
+        else:
+            exp = user["exp"]
+            level = user["level"]
 
-    if new_level > levels_data[user_id]["level"]:
-        levels_data[user_id]["level"] = new_level
-        await message.channel.send(
-            f"🎉 {message.author.mention} awansował(a) na **poziom {new_level}**!"
-        )
+        exp += random.randint(5, 10)
+        new_level = floor(sqrt(exp / 20))
 
-    save_levels(levels_data)
+        if new_level > level:
+            await message.channel.send(
+                f"🎉 {message.author.mention} awansował(a) na **poziom {new_level}**!"
+            )
+
+        await conn.execute("UPDATE levels SET exp = $1, level = $2 WHERE user_id = $3", exp, new_level, user_id)
+
     await bot.process_commands(message)
-
 
 @bot.command(name="rank")
 async def rank(ctx, member: discord.Member = None):
     member = member or ctx.author
     user_id = str(member.id)
-    if user_id not in levels_data:
-        await ctx.send("❌ Ten użytkownik nie ma jeszcze żadnego poziomu.")
-        return
 
-    exp = levels_data[user_id]["exp"]
-    level = levels_data[user_id]["level"]
+    async with bot.db.acquire() as conn:
+        user = await conn.fetchrow("SELECT * FROM levels WHERE user_id = $1", user_id)
+        if not user:
+            await ctx.send("❌ Ten użytkownik nie ma jeszcze żadnego poziomu.")
+            return
+
+        exp = user["exp"]
+        level = user["level"]
 
     embed = discord.Embed(title=f"🏆 Poziom użytkownika: {member.display_name}",
                           color=discord.Color.orange())
@@ -367,19 +357,18 @@ async def rank(ctx, member: discord.Member = None):
         url=member.avatar.url if member.avatar else member.default_avatar.url)
     await ctx.send(embed=embed)
 
-
-@bot.command(name="ranking")
+@bot.command(name="ranking", aliases=["rankin"])
 async def ranking(ctx):
-    sorted_users = sorted(levels_data.items(),
-                          key=lambda x: x[1]['exp'],
-                          reverse=True)
+    async with bot.db.acquire() as conn:
+        rows = await conn.fetch("SELECT * FROM levels ORDER BY exp DESC LIMIT 10")
+
     embed = discord.Embed(title="🥇 Ranking TOP 10", color=discord.Color.gold())
 
-    for i, (user_id, data) in enumerate(sorted_users[:10], start=1):
-        member = ctx.guild.get_member(int(user_id))
-        name = member.display_name if member else f"<@{user_id}>"
+    for i, row in enumerate(rows, start=1):
+        member = ctx.guild.get_member(int(row["user_id"]))
+        name = member.display_name if member else f"<@{row['user_id']}>"
         embed.add_field(name=f"#{i} {name}",
-                        value=f"Poziom {data['level']} - {data['exp']} EXP",
+                        value=f"Poziom {row['level']} - {row['exp']} EXP",
                         inline=False)
 
     await ctx.send(embed=embed)
