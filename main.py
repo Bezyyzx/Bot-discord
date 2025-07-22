@@ -92,6 +92,8 @@ async def on_ready():
     if not hasattr(bot, "db"):
         bot.db = await asyncpg.create_pool(DATABASE_URL)
         print("📡 Połączono z bazą danych!")
+    bot.add_view(AgeSelectView())
+    bot.add_view(GenderSelectView())
 
     role_channel_id = 1396550626262913166
     channel = bot.get_channel(role_channel_id)
