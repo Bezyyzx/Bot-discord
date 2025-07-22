@@ -117,9 +117,8 @@ async def on_ready():
     ]
 
     for m in messages_to_send:
-        already_sent = any(msg.author == bot.user and m["id_text"] in (msg.content or "") for msg in messages)
-        if not already_sent:
-            await channel.send(content=m["content"], view=m["view"])
+    await channel.send(content=m["content"], view=m["view"])
+
 
 @bot.event
 async def on_member_join(member):
