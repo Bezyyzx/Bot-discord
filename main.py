@@ -11,7 +11,7 @@ from datetime import timedelta
 import asyncio
 import random
 
-TOKEN = os.getenv('TOKEN')
+TOKEN = os.getenv('DISCORD_TOKEN')
 CHANNEL_ID = 1396525966116917309
 
 intents = discord.Intents.default()
