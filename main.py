@@ -103,13 +103,19 @@ async def on_ready():
         print("📡 Połączono z bazą danych!")
     bot.add_view(AgeSelectView())
     bot.add_view(GenderSelectView())
-
+@bot.event
+async def on_ready():
+    print(f"✅ Zalogowano jako {bot.user}")
     role_channel_id = 1396550626262913166
     channel = bot.get_channel(role_channel_id)
+
     if not channel:
         print("❌ Nie znaleziono kanału do ról.")
         return
-await send_role_messages(channel)
+
+    await send_role_messages(channel)
+
+
 async def send_role_messages(channel):
     messages_to_send = [
         {
@@ -122,10 +128,14 @@ async def send_role_messages(channel):
         }
     ]
 
+    messages = [msg async for msg in channel.history(limit=50)]
     for m in messages_to_send:
-        await channel.send(content=m["content"], view=m["view"])
-
-
+        already_sent = any(
+            msg.author == bot.user and m["content"] in (msg.content or "")
+            for msg in messages
+        )
+        if not already_sent:
+            await channel.send(content=m["content"], view=m["view"])
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(CHANNEL_ID)
