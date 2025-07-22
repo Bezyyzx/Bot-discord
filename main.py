@@ -90,31 +90,34 @@ class GenderSelectView(View):
 @bot.event
 async def on_ready():
     print(f'✅ Bot jest online jako: {bot.user}')
+
+    # Restart info
     if os.path.exists("restart_flag.txt"):
         with open("restart_flag.txt", "r") as f:
             channel_id = int(f.read())
         os.remove("restart_flag.txt")
-
         channel = bot.get_channel(channel_id)
         if channel:
             await channel.send("✅ Bot został pomyślnie zrestartowany i jest online.")
 
+    # DB init
     if not hasattr(bot, "db"):
         bot.db = await asyncpg.create_pool(DATABASE_URL, statement_cache_size=0)
         print("📡 Połączono z bazą danych!")
+
+    # Widoki
     bot.add_view(AgeSelectView())
     bot.add_view(GenderSelectView())
-@bot.event
-async def on_ready():
-    print(f"✅ Zalogowano jako {bot.user}")
+
+    # Rola — tylko raz!
     role_channel_id = 1396550626262913166
     channel = bot.get_channel(role_channel_id)
-
     if not channel:
         print("❌ Nie znaleziono kanału do ról.")
         return
 
-    await send_role_messages(channel)
+    if not has_sent_role_messages():
+        await send_role_messages(channel)
         mark_role_messages_sent()
 ROLES_SENT_FILE = "roles_sent.txt"
 
