@@ -89,6 +89,15 @@ class GenderSelectView(View):
 @bot.event
 async def on_ready():
     print(f'✅ Bot jest online jako: {bot.user}')
+    if os.path.exists("restart_flag.txt"):
+        with open("restart_flag.txt", "r") as f:
+            channel_id = int(f.read())
+        os.remove("restart_flag.txt")
+
+        channel = bot.get_channel(channel_id)
+        if channel:
+            await channel.send("✅ Bot został pomyślnie zrestartowany i jest online.")
+
     if not hasattr(bot, "db"):
         bot.db = await asyncpg.create_pool(DATABASE_URL)
         print("📡 Połączono z bazą danych!")
@@ -127,9 +136,13 @@ async def on_member_join(member):
 @bot.command(name='restart')
 @commands.is_owner()
 async def restart_bot(ctx):
-    await ctx.send("♻️ Restartuję bota...")
-    await bot.close()  # zatrzymuje bota, Render go od razu odpali ponownie
-await channel.send("✅ Bot został pomyślnie zrestartowany i jest online.")
+    await ctx.send("🔄 Restartuję bota...")
+
+    # Ustaw ID kanału, gdzie ma wysłać info po restarcie
+    with open("restart_flag.txt", "w") as f:
+        f.write(str(ctx.channel.id 1396527730811474026))  # zapisz ID kanału, np. 123456789
+
+    await bot.close()  # Render automatycznie odpala z powrotem
 
 @bot.command(name='commands')
 async def commands_command(ctx):
