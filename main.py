@@ -110,13 +110,18 @@ async def on_ready():
         print("❌ Nie znaleziono kanału do ról.")
         return
 
-    messages = [msg async for msg in channel.history(limit=50)]
     messages_to_send = [
-        {"id_text": "🎯 Wybierz swój przedział wiekowy", "content": "**🎯 Wybierz swój przedział wiekowy z menu poniżej:**", "view": AgeSelectView()},
-        {"id_text": "🚻 Wybierz swoją płeć", "content": "**🚻 Wybierz swoją płeć z menu poniżej:**", "view": GenderSelectView()}
-    ]
+    {
+        "content": "**🎯 Wybierz swój przedział wiekowy z menu poniżej:**",
+        "view": AgeSelectView()
+    },
+    {
+        "content": "**🚻 Wybierz swoją płeć z menu poniżej:**",
+        "view": GenderSelectView()
+    }
+]
 
-    for m in messages_to_send:
+for m in messages_to_send:
     await channel.send(content=m["content"], view=m["view"])
 
 
