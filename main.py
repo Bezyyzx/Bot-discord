@@ -99,7 +99,7 @@ async def on_ready():
             await channel.send("✅ Bot został pomyślnie zrestartowany i jest online.")
 
     if not hasattr(bot, "db"):
-        bot.db = await asyncpg.create_pool(DATABASE_URL)
+        bot.db = await asyncpg.create_pool(DATABASE_URL, statement_cache_size=0)
         print("📡 Połączono z bazą danych!")
     bot.add_view(AgeSelectView())
     bot.add_view(GenderSelectView())
