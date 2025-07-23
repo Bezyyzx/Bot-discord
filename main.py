@@ -197,6 +197,18 @@ async def mute(ctx, member: discord.Member):
     await member.remove_roles(mute_role)
     await ctx.send(f"🔊 {member.mention} został automatycznie odmutowany.")
 
+@bot.command(name='8ball')
+async def eight_ball(ctx, *, question):
+    responses = ["Tak!", "Nie.", "Może...", "Zdecydowanie!", "Wątpię w to.", "Spróbuj ponownie."]
+    await ctx.send(f"🎱 {random.choice(responses)}")
+
+@bot.command(name="ship")
+async def ship(ctx, user1: discord.Member, user2: discord.Member):
+    score = random.randint(0, 100)
+    bar = "█" * (score // 10) + "░" * (10 - score // 10)
+    await ctx.send(f"💖 Dopasowanie między {user1.mention} a {user2.mention}:\n`[{bar}] {score}%`")
+
+
 @bot.command(name='clear')
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx, amount: int = 25):
