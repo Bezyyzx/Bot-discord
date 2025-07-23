@@ -258,6 +258,34 @@ async def ranking(ctx):
         name = member.display_name if member else f"<@{row['user_id']}>"
         embed.add_field(name=f"#{i} {name}", value=f"Poziom {row['level']} - {row['exp']} EXP", inline=False)
     await ctx.send(embed=embed)
+@bot.command(name='roast')
+async def roast(ctx, member: discord.Member):
+    roasty = [
+        f"{member.display_name}, twoje IQ ma ujemny balans na koncie.",
+        f"{member.display_name}, nawet Windows 95 byłby szybszy od twojego myślenia.",
+        f"{member.display_name}, gdyby głupota bolała, krzyczałbyś 24/7.",
+        f"{member.display_name}, jesteś powodem, dla którego instrukcje obsługi istnieją."
+    ]
+    await ctx.send(random.choice(roasty))
+@bot.command(name='insult')
+async def insult(ctx):
+    insults = [
+        "Masz osobowość jak biały chleb – bez smaku.",
+        "Jesteś jak chmura – kiedy znikasz, dzień staje się lepszy.",
+        "Jesteś powodem, dla którego istnieją bramki antyspamowe.",
+        "Twoje opinie są jak Windows Update – nikt ich nie chce, ale i tak się pojawiają."
+    ]
+    await ctx.send(random.choice(insults))
+@bot.command(name='userinfo')
+async def userinfo(ctx, member: discord.Member = None):
+    member = member or ctx.author
+    roles = [role.name for role in member.roles if role.name != "@everyone"]
+    embed = discord.Embed(title=f"ℹ️ Informacje o użytkowniku: {member.display_name}", color=discord.Color.teal())
+    embed.set_thumbnail(url=member.avatar.url if member.avatar else member.default_avatar.url)
+    embed.add_field(name="🆔 ID", value=member.id, inline=False)
+    embed.add_field(name="📆 Dołączył", value=member.joined_at.strftime('%d.%m.%Y'), inline=False)
+    embed.add_field(name="🎭 Role", value=", ".join(roles) if roles else "Brak", inline=False)
+    await ctx.send(embed=embed)
 
     if not hasattr(bot, "db"):
         return
