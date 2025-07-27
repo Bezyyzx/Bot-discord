@@ -55,21 +55,12 @@ async def on_ready():
     age_id, gender_id = load_role_message_ids()
 
     try:
-        if age_id and gender_id:
-            await channel.fetch_message(age_id)
-            await channel.fetch_message(gender_id)
-            print("✅ Wiadomości z rolami już istnieją – nie tworzę nowych.")
-            return
-    except discord.NotFound:
-        print("🔄 Nie znaleziono wiadomości – wysyłam nowe.")
-
-    # Wyślij nowe wiadomości
     age_msg = await channel.send("**🎯 Wybierz swój przedział wiekowy z menu poniżej:**", view=AgeSelectView())
     gender_msg = await channel.send("**🚻 Wybierz swoją płeć z menu poniżej:**", view=GenderSelectView())
     save_role_message_ids(age_msg.id, gender_msg.id)
     print("✅ Wysłano wiadomości z rolami.")
-     except Exception as e:
-            print(f"❌ Błąd przy wysyłaniu wiadomości z rolami: {e}")
+except Exception as e:
+    print(f"❌ Błąd przy wysyłaniu wiadomości: {e}")
     else:
         print("ℹ️ Wiadomości z rolami już zostały wysłane wcześniej.")
 @bot.event
