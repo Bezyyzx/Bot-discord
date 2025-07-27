@@ -216,6 +216,7 @@ async def commands_command(ctx):
         description="Wybierz kategorię z menu poniżej, aby zobaczyć dostępne komendy.",
         color=discord.Color.gold()
     )
+    await ctx.send(embed=embed, view=CommandCategoryView())
 @bot.command(name='ban')
 @commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member, *, reason="Brak powodu"):
