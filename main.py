@@ -77,9 +77,9 @@ async def restart_bot(ctx):
     await ctx.send("🔄 Restartuję bota...")
 
     with open("restart_flag.txt", "w") as f:
-        f.write(str(ctx.channel.id))  # poprawne zapisanie ID kanału
+        f.write(str(ctx.channel.id)) 
 
-    await bot.close()  # Render automatycznie odpala z powrotem
+    await bot.close()  
 class CommandCategorySelect(Select):
     def __init__(self):
         options = [
@@ -128,7 +128,7 @@ class CommandCategoryView(View):
     def __init__(self):
         super().__init__(timeout=None)
         self.add_item(CommandCategorySelect())
-@bot.command(name='commands')  # lub name='pomoc'
+@bot.command(name='commands') 
 async def commands_command(ctx):
     embed = discord.Embed(
         title="🧰 Kategorie komend",
@@ -259,6 +259,10 @@ async def userinfo(ctx, member: discord.Member = None):
     embed.add_field(name="🎭 Role", value=", ".join(roles) if roles else "Brak", inline=False)
     await ctx.send(embed=embed)
 
+    @bot.event
+async def on_message(message):
+    if message.author.bot:
+        return
     if not hasattr(bot, "db"):
         return
     user_id = str(message.author.id)
