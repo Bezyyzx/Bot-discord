@@ -3,7 +3,7 @@ import json
 import discord
 from discord.ui import Select, View
 
-ROLES_STATE_FILE = "roles_state.json"
+ROLE_MESSAGE_FILE = "role_message_ids.json"
 
 class AgeSelect(discord.ui.Select):
     def __init__(self):
@@ -58,13 +58,14 @@ class GenderSelectView(View):
         super().__init__(timeout=None)
         self.add_item(GenderSelect())
 
-def has_sent_role_messages():
-    if not os.path.exists(ROLES_STATE_FILE):
-        return False
-    with open(ROLES_STATE_FILE, "r") as f:
-        data = json.load(f)
-    return data.get("sent", False)
+# Zapisywanie i wczytywanie ID wiadomości
+def save_role_message_ids(age_msg_id, gender_msg_id):
+    with open(ROLE_MESSAGE_FILE, "w") as f:
+        json.dump({"age": age_msg_id, "gender": gender_msg_id}, f)
 
-def mark_role_messages_sent():
-    with open(ROLES_STATE_FILE, "w") as f:
-        json.dump({"sent": True}, f)
+def load_role_message_ids():
+    if not os.path.exists(ROLE_MESSAGE_FILE):
+        return None, None
+    with open(ROLE_MESSAGE_FILE, "r") as f:
+        data = json.load(f)
+        return data.get("age"), data.get("gender")
