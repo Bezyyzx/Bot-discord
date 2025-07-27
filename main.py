@@ -161,26 +161,7 @@ async def restart_bot(ctx):
         f.write(str(ctx.channel.id))  # poprawne zapisanie ID kanału
 
     await bot.close()  # Render automatycznie odpala z powrotem
-
-@bot.command(name='commands')  # lub name='pomoc'
-async def commands_command(ctx):
-    embed = discord.Embed(
-        title="🧰 Kategorie komend",
-        description="Wybierz kategorię z menu poniżej, aby zobaczyć dostępne komendy.",
-        color=discord.Color.gold()
-    )
-    await ctx.send(embed=embed, view=CommandCategoryView())
-    embed.add_field(name="`!commands`", value="🧲 Wyświetla tę listę komend.", inline=False)
-    embed.add_field(name="`!ban @user [powód]`[ADM]", value="🔨 Banuje użytkownika (wymaga uprawnień).", inline=False)
-    embed.add_field(name="`!mute @user`[ADM]", value="🔇 Mutuje użytkownika na 15 minut (wymaga uprawnień).", inline=False)
-    embed.add_field(name="`!clear [liczba]`[ADM]", value="✅ Czyści określoną liczbę wiadomości (domyślnie 25).", inline=False)
-    embed.add_field(name="`!profil`", value="🧲 Pokazuje Twój profil: role, data dołączenia, ID.", inline=False)
-    embed.add_field(name="`!avatar [@user]`", value="🖼️ Wyświetla avatar Twój lub oznaczonego użytkownika.", inline=False)
-    embed.add_field(name="`!serverinfo`", value="ℹ️ Informacje o serwerze.", inline=False)
-    embed.add_field(name="`!rank`", value="🏆 Sprawdź swój aktualny poziom i exp.", inline=False)
-    embed.add_field(name="`!ranking`", value="🥇 Wyświetla TOP 10 użytkowników.", inline=False)
-    await ctx.send(embed=embed)
-    class CommandCategorySelect(Select):
+class CommandCategorySelect(Select):
     def __init__(self):
         options = [
             discord.SelectOption(label="🔧 Administracyjne", description="Komendy dla moderatorów/adminów"),
@@ -228,7 +209,24 @@ class CommandCategoryView(View):
     def __init__(self):
         super().__init__(timeout=None)
         self.add_item(CommandCategorySelect())
-
+@bot.command(name='commands')  # lub name='pomoc'
+async def commands_command(ctx):
+    embed = discord.Embed(
+        title="🧰 Kategorie komend",
+        description="Wybierz kategorię z menu poniżej, aby zobaczyć dostępne komendy.",
+        color=discord.Color.gold()
+    )
+    await ctx.send(embed=embed, view=CommandCategoryView())
+    embed.add_field(name="`!commands`", value="🧲 Wyświetla tę listę komend.", inline=False)
+    embed.add_field(name="`!ban @user [powód]`[ADM]", value="🔨 Banuje użytkownika (wymaga uprawnień).", inline=False)
+    embed.add_field(name="`!mute @user`[ADM]", value="🔇 Mutuje użytkownika na 15 minut (wymaga uprawnień).", inline=False)
+    embed.add_field(name="`!clear [liczba]`[ADM]", value="✅ Czyści określoną liczbę wiadomości (domyślnie 25).", inline=False)
+    embed.add_field(name="`!profil`", value="🧲 Pokazuje Twój profil: role, data dołączenia, ID.", inline=False)
+    embed.add_field(name="`!avatar [@user]`", value="🖼️ Wyświetla avatar Twój lub oznaczonego użytkownika.", inline=False)
+    embed.add_field(name="`!serverinfo`", value="ℹ️ Informacje o serwerze.", inline=False)
+    embed.add_field(name="`!rank`", value="🏆 Sprawdź swój aktualny poziom i exp.", inline=False)
+    embed.add_field(name="`!ranking`", value="🥇 Wyświetla TOP 10 użytkowników.", inline=False)
+    await ctx.send(embed=embed)
 @bot.command(name='ban')
 @commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member, *, reason="Brak powodu"):
