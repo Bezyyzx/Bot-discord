@@ -258,30 +258,6 @@ async def userinfo(ctx, member: discord.Member = None):
     embed.add_field(name="📆 Dołączył", value=member.joined_at.strftime('%d.%m.%Y'), inline=False)
     embed.add_field(name="🎭 Role", value=", ".join(roles) if roles else "Brak", inline=False)
     await ctx.send(embed=embed)
-
-    @bot.event
-async def on_message(message):
-    if message.author.bot:
-        return
-    if not hasattr(bot, "db"):
-        return
-    user_id = str(message.author.id)
-    async with bot.db.acquire() as conn:
-        user = await conn.fetchrow("SELECT * FROM levels WHERE user_id = $1", user_id)
-        if not user:
-            await conn.execute("INSERT INTO levels (user_id, exp, level) VALUES ($1, 0, 0)", user_id)
-            exp = 0
-            level = 0
-        else:
-            exp = user["exp"]
-            level = user["level"]
-        exp += random.randint(5, 10)
-        new_level = floor(sqrt(exp / 20))
-        if new_level > level:
-            await message.channel.send(f"🎉 {message.author.mention} awansował(a) na **poziom {new_level}**!")
-        await conn.execute("UPDATE levels SET exp = $1, level = $2 WHERE user_id = $3", exp, new_level, user_id)
-    await bot.process_commands(message)
-
 keep_alive()
 def has_sent_role_messages():
     if not os.path.exists(ROLES_STATE_FILE):
@@ -293,4 +269,33 @@ def has_sent_role_messages():
 def mark_role_messages_sent():
     with open(ROLES_STATE_FILE, "w") as f:
         json.dump({"sent": True}, f)
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return
+
+    if not hasattr(bot, "db"):
+        return
+
+    user_id = str(message.author.id)
+
+    async with bot.db.acquire() as conn:
+        user = await conn.fetchrow("SELECT * FROM levels WHERE user_id = $1", user_id)
+        if not user:
+            await conn.execute("INSERT INTO levels (user_id, exp, level) VALUES ($1, 0, 0)", user_id)
+            exp = 0
+            level = 0
+        else:
+            exp = user["exp"]
+            level = user["level"]
+
+        exp += random.randint(5, 10)
+        new_level = floor(sqrt(exp / 20))
+
+        if new_level > level:
+            await message.channel.send(f"🎉 {message.author.mention} awansował(a) na **poziom {new_level}**!")
+
+        await conn.execute("UPDATE levels SET exp = $1, level = $2 WHERE user_id = $3", exp, new_level, user_id)
+
+    await bot.process_commands(message)
 bot.run(TOKEN)
