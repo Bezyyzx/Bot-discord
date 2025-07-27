@@ -162,9 +162,14 @@ async def restart_bot(ctx):
 
     await bot.close()  # Render automatycznie odpala z powrotem
 
-@bot.command(name='commands')
+@bot.command(name='commands')  # lub name='pomoc'
 async def commands_command(ctx):
-    embed = discord.Embed(title="📜 Lista dostępnych komend", description="Poniżej znajdziesz wszystkie dostępne komendy:", color=discord.Color.gold())
+    embed = discord.Embed(
+        title="🧰 Kategorie komend",
+        description="Wybierz kategorię z menu poniżej, aby zobaczyć dostępne komendy.",
+        color=discord.Color.gold()
+    )
+    await ctx.send(embed=embed, view=CommandCategoryView())
     embed.add_field(name="`!commands`", value="🧲 Wyświetla tę listę komend.", inline=False)
     embed.add_field(name="`!ban @user [powód]`[ADM]", value="🔨 Banuje użytkownika (wymaga uprawnień).", inline=False)
     embed.add_field(name="`!mute @user`[ADM]", value="🔇 Mutuje użytkownika na 15 minut (wymaga uprawnień).", inline=False)
@@ -175,6 +180,54 @@ async def commands_command(ctx):
     embed.add_field(name="`!rank`", value="🏆 Sprawdź swój aktualny poziom i exp.", inline=False)
     embed.add_field(name="`!ranking`", value="🥇 Wyświetla TOP 10 użytkowników.", inline=False)
     await ctx.send(embed=embed)
+    class CommandCategorySelect(Select):
+    def __init__(self):
+        options = [
+            discord.SelectOption(label="🔧 Administracyjne", description="Komendy dla moderatorów/adminów"),
+            discord.SelectOption(label="📊 Statystyki i profil", description="Informacje o użytkowniku i serwerze"),
+            discord.SelectOption(label="🎮 Zabawne", description="Śmieszne i rozrywkowe komendy")
+        ]
+        super().__init__(placeholder="Wybierz kategorię komend", min_values=1, max_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        value = self.values[0]
+        embed = discord.Embed(color=discord.Color.blurple())
+
+        if "Administracyjne" in value:
+            embed.title = "🔧 Komendy administracyjne"
+            embed.description = (
+                "`!ban @user [powód]` - Banuje użytkownika\n"
+                "`!mute @user` - Mutuje użytkownika na 15 minut\n"
+                "`!clear [liczba]` - Czyści wiadomości\n"
+                "`!restart` - Restartuje bota (właściciel)"
+            )
+
+        elif "Statystyki" in value:
+            embed.title = "📊 Komendy statystyczne i profilowe"
+            embed.description = (
+                "`!profil` - Twój profil\n"
+                "`!avatar [@user]` - Avatar użytkownika\n"
+                "`!serverinfo` - Informacje o serwerze\n"
+                "`!rank` - Twój poziom i exp\n"
+                "`!ranking` - TOP 10 użytkowników\n"
+                "`!userinfo` - Informacje o użytkowniku"
+            )
+
+        elif "Zabawne" in value:
+            embed.title = "🎮 Komendy zabawne"
+            embed.description = (
+                "`!8ball [pytanie]` - Magiczna kula\n"
+                "`!ship @user1 @user2` - Dopasowanie pary\n"
+                "`!roast @user` - Słowna podpucha\n"
+                "`!insult` - Losowa obraza"
+            )
+
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+class CommandCategoryView(View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.add_item(CommandCategorySelect())
 
 @bot.command(name='ban')
 @commands.has_permissions(ban_members=True)
