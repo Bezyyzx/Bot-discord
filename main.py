@@ -50,10 +50,23 @@ async def on_ready():
         return
 
     if not has_sent_role_messages():
-        try:
-            await channel.send("**🎯 Wybierz swój przedział wiekowy z menu poniżej:**", view=AgeSelectView())
-            await channel.send("**🚻 Wybierz swoją płeć z menu poniżej:**", view=GenderSelectView())
-            mark_role_messages_sent()
+      from roles import load_role_message_ids, save_role_message_ids
+
+    age_id, gender_id = load_role_message_ids()
+
+    try:
+        if age_id and gender_id:
+            await channel.fetch_message(age_id)
+            await channel.fetch_message(gender_id)
+            print("✅ Wiadomości z rolami już istnieją – nie tworzę nowych.")
+            return
+    except discord.NotFound:
+        print("🔄 Nie znaleziono wiadomości – wysyłam nowe.")
+
+    # Wyślij nowe wiadomości
+    age_msg = await channel.send("**🎯 Wybierz swój przedział wiekowy z menu poniżej:**", view=AgeSelectView())
+    gender_msg = await channel.send("**🚻 Wybierz swoją płeć z menu poniżej:**", view=GenderSelectView())
+    save_role_message_ids(age_msg.id, gender_msg.id)
             print("✅ Wysłano wiadomości z rolami.")
         except Exception as e:
             print(f"❌ Błąd przy wysyłaniu wiadomości z rolami: {e}")
@@ -259,24 +272,6 @@ async def userinfo(ctx, member: discord.Member = None):
     embed.add_field(name="🎭 Role", value=", ".join(roles) if roles else "Brak", inline=False)
     await ctx.send(embed=embed)
 keep_alive()
-def has_sent_role_messages():
-    if not os.path.exists(ROLES_STATE_FILE):
-        return False
-    with open(ROLES_STATE_FILE, "r") as f:
-        data = json.load(f)
-    return data.get("sent", False)
-
-def mark_role_messages_sent():
-    with open(ROLES_STATE_FILE, "w") as f:
-        json.dump({"sent": True}, f)
-@bot.event
-async def on_message(message):
-    if message.author.bot:
-        return
-
-    if not hasattr(bot, "db"):
-        return
-
     user_id = str(message.author.id)
 
     async with bot.db.acquire() as conn:
