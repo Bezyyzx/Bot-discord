@@ -68,7 +68,7 @@ async def on_ready():
     gender_msg = await channel.send("**🚻 Wybierz swoją płeć z menu poniżej:**", view=GenderSelectView())
     save_role_message_ids(age_msg.id, gender_msg.id)
     print("✅ Wysłano wiadomości z rolami.")
-        except Exception as e:
+     except Exception as e:
             print(f"❌ Błąd przy wysyłaniu wiadomości z rolami: {e}")
     else:
         print("ℹ️ Wiadomości z rolami już zostały wysłane wcześniej.")
