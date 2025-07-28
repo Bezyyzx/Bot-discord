@@ -277,7 +277,7 @@ async def userinfo(ctx, member: discord.Member = None):
     embed.add_field(name="🎭 Role", value=", ".join(roles) if roles else "Brak", inline=False)
     await ctx.send(embed=embed)
 keep_alive()
-    user_id = str(message.author.id)
+user_id = str(message.author.id)
 
     async with bot.db.acquire() as conn:
         user = await conn.fetchrow("SELECT * FROM levels WHERE user_id = $1", user_id)
