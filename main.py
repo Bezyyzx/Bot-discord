@@ -59,7 +59,7 @@ try:
     gender_msg = await channel.send("**🚻 Wybierz swoją płeć z menu poniżej:**", view=GenderSelectView())
     save_role_message_ids(age_msg.id, gender_msg.id)
     print("✅ Wysłano wiadomości z rolami.")
-except Exception as e:
+    except Exception as e:
 if
     print(f"❌ Błąd przy wysyłaniu wiadomości: {e}")
 else:
