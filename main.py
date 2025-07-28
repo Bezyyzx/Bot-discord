@@ -60,7 +60,7 @@ try:
     save_role_message_ids(age_msg.id, gender_msg.id)
     print("✅ Wysłano wiadomości z rolami.")
 except Exception as e:
-        if
+    if:
     print(f"❌ Błąd przy wysyłaniu wiadomości: {e}")
         else:
             print("ℹ️ Wiadomości z rolami już zostały wysłane wcześniej.")
