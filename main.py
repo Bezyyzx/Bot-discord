@@ -278,9 +278,14 @@ async def userinfo(ctx, member: discord.Member = None):
     embed.add_field(name="🎭 Role", value=", ".join(roles) if roles else "Brak", inline=False)
     await ctx.send(embed=embed)
 keep_alive()
-user_id = str(message.author.id)
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return
 
-async with bot.db.acquire() as conn:
+    user_id = str(message.author.id)
+
+    async with bot.db.acquire() as conn:
         user = await conn.fetchrow("SELECT * FROM levels WHERE user_id = $1", user_id)
         if not user:
             await conn.execute("INSERT INTO levels (user_id, exp, level) VALUES ($1, 0, 0)", user_id)
@@ -298,5 +303,5 @@ async with bot.db.acquire() as conn:
 
         await conn.execute("UPDATE levels SET exp = $1, level = $2 WHERE user_id = $3", exp, new_level, user_id)
 
-await bot.process_commands(message)
+    await bot.process_commands(message)
 bot.run(TOKEN)
