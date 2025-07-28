@@ -60,7 +60,8 @@ try:
     save_role_message_ids(age_msg.id, gender_msg.id)
     print("✅ Wysłano wiadomości z rolami.")
 except Exception as e:
-    print(f"❌ Błąd przy wysyłaniu wiadomości: {e}")
+        if not has_sent_role_messages():
+            print(f"❌ Błąd przy wysyłaniu wiadomości: {e}")
         else:
             print("ℹ️ Wiadomości z rolami już zostały wysłane wcześniej.")
 @bot.event
