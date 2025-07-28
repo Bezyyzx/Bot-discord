@@ -297,5 +297,5 @@ async with bot.db.acquire() as conn:
 
         await conn.execute("UPDATE levels SET exp = $1, level = $2 WHERE user_id = $3", exp, new_level, user_id)
 
-    await bot.process_commands(message)
+await bot.process_commands(message)
 bot.run(TOKEN)
