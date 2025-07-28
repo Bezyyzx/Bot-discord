@@ -54,7 +54,7 @@ async def on_ready():
 
     age_id, gender_id = load_role_message_ids()
 
-        try:
+    try:
     age_msg = await channel.send("**🎯 Wybierz swój przedział wiekowy z menu poniżej:**", view=AgeSelectView())
     gender_msg = await channel.send("**🚻 Wybierz swoją płeć z menu poniżej:**", view=GenderSelectView())
     save_role_message_ids(age_msg.id, gender_msg.id)
