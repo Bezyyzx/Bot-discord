@@ -232,7 +232,21 @@ async def ranking(ctx):
     for i, row in enumerate(rows, start=1):
         member = ctx.guild.get_member(int(row["user_id"]))
         name = member.display_name if member else f"<@{row['user_id']}>"
-        embed.add_field(name=f"#{i} {name}", value=f"Poziom {row['level']} - {row['exp']} EXP", inline=False)
+       icons = ["🥇", "🥈", "🥉"] + ["🔹"] * 7
+level_colors = {
+    0: "⚪", 1: "🟢", 2: "🔵", 3: "🟣", 4: "🟠", 5: "🔴", 6: "🌟", 7: "💎"
+}
+
+for i, row in enumerate(rows, start=1):
+    member = ctx.guild.get_member(int(row["user_id"]))
+    name = member.display_name if member else f"<@{row['user_id']}>"
+    level_icon = level_colors.get(row['level'], "✨")
+    rank_icon = icons[i - 1] if i <= len(icons) else "🔹"
+    embed.add_field(
+        name=f"{rank_icon} #{i} {name}",
+        value=f"{level_icon} Poziom {row['level']} – `{row['exp']} EXP`",
+        inline=False
+    )
     await ctx.send(embed=embed)
 @bot.command(name='roast')
 async def roast(ctx, member: discord.Member):
