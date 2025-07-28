@@ -279,7 +279,7 @@ async def userinfo(ctx, member: discord.Member = None):
 keep_alive()
 user_id = str(message.author.id)
 
-    async with bot.db.acquire() as conn:
+async with bot.db.acquire() as conn:
         user = await conn.fetchrow("SELECT * FROM levels WHERE user_id = $1", user_id)
         if not user:
             await conn.execute("INSERT INTO levels (user_id, exp, level) VALUES ($1, 0, 0)", user_id)
