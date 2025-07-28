@@ -69,3 +69,12 @@ def load_role_message_ids():
     with open(ROLE_MESSAGE_FILE, "r") as f:
         data = json.load(f)
         return data.get("age"), data.get("gender")
+
+def has_sent_role_messages():
+    return os.path.exists(ROLE_MESSAGE_FILE)
+
+def mark_role_messages_sent():
+    # Prosta wersja – możesz ją rozszerzyć jeśli chcesz coś więcej zapisać
+    if not os.path.exists(ROLE_MESSAGE_FILE):
+        with open(ROLE_MESSAGE_FILE, "w") as f:
+            json.dump({"sent": True}, f)
