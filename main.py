@@ -60,8 +60,9 @@ try:
     save_role_message_ids(age_msg.id, gender_msg.id)
     print("✅ Wysłano wiadomości z rolami.")
 except Exception as e:
+if
     print(f"❌ Błąd przy wysyłaniu wiadomości: {e}")
-    else:
+else:
         print("ℹ️ Wiadomości z rolami już zostały wysłane wcześniej.")
 @bot.event
 async def on_member_join(member):
