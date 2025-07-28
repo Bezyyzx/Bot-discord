@@ -50,20 +50,21 @@ async def on_ready():
         return
 
     if not has_sent_role_messages():
-      from roles import load_role_message_ids, save_role_message_ids
+        from roles import load_role_message_ids, save_role_message_ids
 
     age_id, gender_id = load_role_message_ids()
 
-try:
-    age_msg = await channel.send("**🎯 Wybierz swój przedział wiekowy z menu poniżej:**", view=AgeSelectView())
-    gender_msg = await channel.send("**🚻 Wybierz swoją płeć z menu poniżej:**", view=GenderSelectView())
-    save_role_message_ids(age_msg.id, gender_msg.id)
-    print("✅ Wysłano wiadomości z rolami.")
-except Exception as e:
+    try:
+        age_msg = await channel.send("**🎯 Wybierz swój przedział wiekowy z menu poniżej:**", view=AgeSelectView())
+        gender_msg = await channel.send("**🚻 Wybierz swoją płeć z menu poniżej:**", view=GenderSelectView())
+        save_role_message_ids(age_msg.id, gender_msg.id)
+        print("✅ Wysłano wiadomości z rolami.")
+    except Exception as e:
         if not has_sent_role_messages():
             print(f"❌ Błąd przy wysyłaniu wiadomości: {e}")
         else:
             print("ℹ️ Wiadomości z rolami już zostały wysłane wcześniej.")
+
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(CHANNEL_ID)
