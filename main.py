@@ -15,6 +15,28 @@ from roles import AgeSelectView, GenderSelectView, has_sent_role_messages, mark_
 TOKEN = os.getenv('DISCORD_TOKEN')
 CHANNEL_ID = 1396525966116917309
 DATABASE_URL = os.getenv("DATABASE_URL")
+tymbark_quotes = [
+    "Uśmiechnij się!",
+    "Będzie dobrze.",
+    "Działaj z pasją.",
+    "Dzień dobry, piękny świecie!",
+    "Zrób coś szalonego.",
+    "Uśmiech to klucz do serca.",
+    "Dziś może być Twój dzień.",
+    "Ciesz się chwilą.",
+    "Myśl pozytywnie.",
+    "Jesteś super!",
+    "Czas na coś nowego.",
+    "Zacznij od nowa.",
+    "Zrób pierwszy krok.",
+    "Nie bój się marzyć.",
+    "Masz w sobie moc.",
+    "Żyj chwilą.",
+    "Każdy dzień to szansa.",
+    "Szczęście jest blisko.",
+    "Jesteś wyjątkowy.",
+    "Jutro też jest dzień."
+]
 ROLES_STATE_FILE = "roles_state.json"
 
 intents = discord.Intents.default()
@@ -126,6 +148,7 @@ class CommandCategorySelect(Select):
                 "`!ship @user1 @user2` - Dopasowanie pary\n"
                 "`!roast @user` - Słowna podpucha\n"
                 "`!insult` - Losowa obraza"
+                "`!tekstdnia` - Hasło z kapsla Tymbarka"
             )
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -180,6 +203,12 @@ async def ship(ctx, user1: discord.Member, user2: discord.Member):
 async def clear(ctx, amount: int = 25):
     deleted = await ctx.channel.purge(limit=amount)
     await ctx.send(f"🧹 Usunięto {len(deleted)} wiadomości.", delete_after=5)
+
+@bot.command(name='tekstdnia')
+async def tekst_dnia(ctx):
+    tekst = random.choice(tymbark_quotes)
+    embed = discord.Embed(title="🧃 Tekst Dnia z Tymbarka", description=f"**{tekst}**", color=discord.Color.green())
+    await ctx.send(embed=embed)
 
 @bot.command(name='profil')
 async def profile(ctx):
