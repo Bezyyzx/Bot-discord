@@ -147,7 +147,7 @@ class CommandCategorySelect(Select):
                 "`!8ball [pytanie]` - Magiczna kula\n"
                 "`!ship @user1 @user2` - Dopasowanie pary\n"
                 "`!roast @user` - Słowna podpucha\n"
-                "`!insult` - Losowa obraza"
+                "`!insult` - Losowa obraza\n"
                 "`!tekstdnia` - Hasło z kapsla Tymbarka"
             )
 
